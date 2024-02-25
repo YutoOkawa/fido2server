@@ -1,6 +1,9 @@
 package server
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestNewServer(t *testing.T) {
 	// GIVEN
@@ -15,7 +18,7 @@ func TestNewServer(t *testing.T) {
 		t.Errorf("expected :%d to be :8080, got %s", port, server.port)
 	}
 
-	if server.shutdownTimeout != 5 {
-		t.Errorf("expected shutdownTimeout to be %d, got %d", shutdownTimeout, server.shutdownTimeout)
+	if server.shutdownTimeout != time.Duration(shutdownTimeout)*time.Second {
+		t.Errorf("expected shutdownTimeout to be %v, got %d", time.Duration(server.shutdownTimeout)*time.Second, server.shutdownTimeout)
 	}
 }
