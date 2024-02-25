@@ -2,7 +2,11 @@ module fido2server
 
 go 1.22.0
 
-require github.com/gofiber/fiber/v2 v2.52.1
+require (
+	github.com/gofiber/fiber/v2 v2.52.1
+	github.com/google/go-cmp v0.6.0
+	gopkg.in/yaml.v3 v3.0.1
+)
 
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
