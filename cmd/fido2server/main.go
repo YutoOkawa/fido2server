@@ -4,6 +4,7 @@ import (
 	"context"
 	"fido2server/internal/config"
 	"fido2server/internal/handler"
+	"fido2server/internal/repository"
 	"fido2server/internal/server"
 	"fido2server/internal/service"
 	"os/signal"
@@ -24,8 +25,13 @@ func main() {
 
 	server := server.NewServer(cfg.API)
 
+	// initialize repository
+	inMemoryUserRepositoryImpl := repository.InMemoryUserRepository{}
+
 	// initialize service
-	registerService := service.RegisterService{}
+	registerService := service.RegisterService{
+		UserRepository: &inMemoryUserRepositoryImpl,
+	}
 
 	// initialize handler
 	server.App.Get("/healthz", handler.HealthzHandler)
