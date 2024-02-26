@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fido2server/internal/config"
 	"fido2server/internal/handler"
 	"fido2server/internal/server"
 	"fido2server/internal/service"
@@ -9,10 +10,19 @@ import (
 	"syscall"
 )
 
+// TODO: マウント先に変更(rootで実行できる状態になっている)
+var defaultFilePath = "testdata/config.yaml"
+
 func main() {
-	server := server.NewServer(8080, 5)
 	ctx, ctxCancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer ctxCancel()
+
+	cfg, err := config.NewConfig(defaultFilePath)
+	if err != nil {
+		return
+	}
+
+	server := server.NewServer(cfg.API)
 
 	// initialize service
 	registerService := service.RegisterService{}
