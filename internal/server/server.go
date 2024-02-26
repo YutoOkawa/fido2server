@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fido2server/internal/config"
 	"fmt"
 	"time"
 
@@ -13,12 +14,12 @@ type Server struct {
 	shutdownTimeout time.Duration
 }
 
-func NewServer(port, shutdownTimeout int) *Server {
+func NewServer(cfg config.API) *Server {
 	app := fiber.New()
 	return &Server{
 		App:             app,
-		port:            fmt.Sprintf(":%d", port),
-		shutdownTimeout: time.Duration(shutdownTimeout) * time.Second,
+		port:            fmt.Sprintf(":%d", cfg.Port),
+		shutdownTimeout: time.Duration(cfg.ShutdownTimeoutSec) * time.Second,
 	}
 }
 
