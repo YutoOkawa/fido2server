@@ -4,7 +4,9 @@ import (
 	"context"
 	"fido2server/internal/config"
 	"fido2server/internal/handler"
+	"fido2server/internal/repository"
 	"fido2server/internal/server"
+	"fido2server/internal/service"
 	"os/signal"
 	"syscall"
 )
@@ -24,12 +26,15 @@ func main() {
 	server := server.NewServer(cfg.API)
 
 	// initialize repository
-	// inMemoryUserRepositoryImpl := repository.InMemoryUserRepository{}
+	inMemoryUserRepositoryImpl := repository.InMemoryUserRepository{}
 
 	// initialize service
-	// registerService := service.RegisterService{
-	// 	UserRepository: &inMemoryUserRepositoryImpl,
-	// }
+	registerOptionsService := service.RegisterOptionsService{
+		UserRepository: &inMemoryUserRepositoryImpl,
+	}
+	registerResultService := service.RegisterResultService{
+		UserRepository: &inMemoryUserRepositoryImpl,
+	}
 
 	// initialize handler
 	server.App.Get("/healthz", handler.HealthzHandler)
@@ -37,8 +42,8 @@ func main() {
 	{
 		register := v1.Group("/register")
 		{
-			register.Post("/options", handler.RegisterOptionsHandler)
-			register.Post("/result", handler.RegisterResultHandler)
+			register.Post("/options", handler.RegisterOptionsHandler(registerOptionsService))
+			register.Post("/result", handler.RegisterResultHandler(registerResultService))
 		}
 	}
 
