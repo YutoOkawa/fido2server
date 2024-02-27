@@ -14,3 +14,11 @@ func RegisterHandler(rergister service.RegisterService) func(c *fiber.Ctx) error
 		return nil
 	}
 }
+
+func RegisterOptionsHandler(c *fiber.Ctx) error {
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func RegisterResultHandler(c *fiber.Ctx) error {
+	return c.SendStatus(fiber.StatusOK)
+}

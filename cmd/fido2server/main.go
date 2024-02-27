@@ -4,9 +4,7 @@ import (
 	"context"
 	"fido2server/internal/config"
 	"fido2server/internal/handler"
-	"fido2server/internal/repository"
 	"fido2server/internal/server"
-	"fido2server/internal/service"
 	"os/signal"
 	"syscall"
 )
@@ -26,18 +24,22 @@ func main() {
 	server := server.NewServer(cfg.API)
 
 	// initialize repository
-	inMemoryUserRepositoryImpl := repository.InMemoryUserRepository{}
+	// inMemoryUserRepositoryImpl := repository.InMemoryUserRepository{}
 
 	// initialize service
-	registerService := service.RegisterService{
-		UserRepository: &inMemoryUserRepositoryImpl,
-	}
+	// registerService := service.RegisterService{
+	// 	UserRepository: &inMemoryUserRepositoryImpl,
+	// }
 
 	// initialize handler
 	server.App.Get("/healthz", handler.HealthzHandler)
 	v1 := server.App.Group("v1")
 	{
-		v1.Post("/register", handler.RegisterHandler(registerService))
+		register := v1.Group("/register")
+		{
+			register.Post("/options", handler.RegisterOptionsHandler)
+			register.Post("/result", handler.RegisterResultHandler)
+		}
 	}
 
 	srvErrCh := make(chan error, 1)
