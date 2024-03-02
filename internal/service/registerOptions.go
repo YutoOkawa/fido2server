@@ -32,19 +32,16 @@ func (r *RegisterOptionsService) RegisterOptions(c *fiber.Ctx) error {
 	if err := validateRequestParam(params); err != nil {
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
-	userName := params.UserName
-	displayName := params.DisplayName
-	icon := params.Icon
 
 	var user *webauthnlib.RegisteredUser
 	var err error
-	user, err = r.UserRepository.GetUser(userName, displayName)
+	user, err = r.UserRepository.GetUser(params.UserName, params.DisplayName)
 	if !errors.Is(err, webauthnlib.ErrRegisterUserNotFound) && err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
 	if errors.Is(err, webauthnlib.ErrRegisterUserNotFound) {
-		user, err = webauthnlib.NewRegisteredUser(userName, displayName, icon)
+		user, err = webauthnlib.NewRegisteredUser(params.UserName, params.DisplayName, params.Icon)
 		if err != nil {
 			return c.SendStatus(fiber.StatusInternalServerError)
 		}
