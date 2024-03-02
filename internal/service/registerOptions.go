@@ -1,15 +1,79 @@
 package service
 
 import (
+	"encoding/json"
+	"errors"
 	"fido2server/internal/repository"
+	webauthnlib "fido2server/pkg/webauthn"
 
+	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/gofiber/fiber/v2"
 )
 
+type RequestParam struct {
+	UserName    string `json:"userName"`
+	DisplayName string `json:"displayName"`
+	Icon        string `json:"icon"`
+}
+
 type RegisterOptionsService struct {
-	UserRepository repository.UserRepository
+	UserRepository        repository.UserRepository
+	SessionDataRepository repository.SessionDataRepository
+	WebAuthn              *webauthn.WebAuthn
 }
 
 func (r *RegisterOptionsService) RegisterOptions(c *fiber.Ctx) error {
-	return c.SendStatus(fiber.StatusOK)
+	body := c.Body()
+
+	var params RequestParam
+	if err := json.Unmarshal(body, &params); err != nil {
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+	if err := validateRequestParam(params); err != nil {
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+	userName := params.UserName
+	displayName := params.DisplayName
+	icon := params.Icon
+
+	var user *webauthnlib.RegisteredUser
+	var err error
+	user, err = r.UserRepository.GetUser(userName, displayName)
+	if !errors.Is(err, webauthnlib.ErrRegisterUserNotFound) && err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	if errors.Is(err, webauthnlib.ErrRegisterUserNotFound) {
+		user, err = webauthnlib.NewRegisteredUser(userName, displayName, icon)
+		if err != nil {
+			return c.SendStatus(fiber.StatusInternalServerError)
+		}
+	}
+
+	options, sessionData, err := r.WebAuthn.BeginRegistration(user)
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	if err := r.SessionDataRepository.SaveSessionData(sessionData); err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	optionsBytes, err := json.Marshal(options)
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	return c.Send(optionsBytes)
+}
+
+// TODO: sanitize
+func validateRequestParam(params RequestParam) error {
+	if params.UserName == "" {
+		return errors.New("userName is required")
+	}
+	if params.DisplayName == "" {
+		return errors.New("displayName is required")
+	}
+	return nil
 }
