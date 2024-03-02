@@ -1,8 +1,8 @@
 package repository
 
-import "github.com/go-webauthn/webauthn/webauthn"
+import "fido2server/pkg/webauthn"
 
 type UserRepository interface {
-	GetUser() (webauthn.User, error)
-	SaveUser(user webauthn.User) error
+	GetUser(userName, displayName string) (*webauthn.RegisteredUser, error)
+	SaveUser(user *webauthn.RegisteredUser) error
 }
