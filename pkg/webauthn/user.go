@@ -45,5 +45,9 @@ func (n *RegisteredUser) WebAuthnIcon() string {
 }
 
 func (n *RegisteredUser) WebAuthnCredentials() []webauthnlib.Credential {
-	return []webauthnlib.Credential{}
+	return n.Credentials
+}
+
+func (r *RegisteredUser) AddCredential(credential webauthnlib.Credential) {
+	r.Credentials = append(r.Credentials, credential)
 }
