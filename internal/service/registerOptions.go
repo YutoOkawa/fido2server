@@ -35,7 +35,7 @@ func (r *RegisterOptionsService) RegisterOptions(c *fiber.Ctx) error {
 
 	var user *webauthnlib.RegisteredUser
 	var err error
-	user, err = r.UserRepository.GetUser(params.UserName, params.DisplayName)
+	user, err = r.UserRepository.GetUser(params.UserName)
 	if !errors.Is(err, webauthnlib.ErrRegisterUserNotFound) && err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}

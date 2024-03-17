@@ -48,7 +48,7 @@ func TestInMemoryUserRepository_GetUser(t *testing.T) {
 			}
 
 			// WHEN
-			gotRegisteredUser, gotErr := userRepository.GetUser(c.userName, c.displayName)
+			gotRegisteredUser, gotErr := userRepository.GetUser(c.userName)
 
 			// THEN
 			if c.wantErr {
