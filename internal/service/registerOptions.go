@@ -45,6 +45,9 @@ func (r *RegisterOptionsService) RegisterOptions(c *fiber.Ctx) error {
 		if err != nil {
 			return c.SendStatus(fiber.StatusInternalServerError)
 		}
+		if err := r.UserRepository.SaveUser(user); err != nil {
+			return c.SendStatus(fiber.StatusInternalServerError)
+		}
 	}
 
 	options, sessionData, err := r.WebAuthn.BeginRegistration(user)

@@ -7,7 +7,7 @@ import (
 	"fido2server/internal/repository"
 	"fido2server/internal/server"
 	"fido2server/internal/service"
-	"fido2server/pkg/webauthn"
+	webauthnlib "fido2server/pkg/webauthn"
 	"os/signal"
 	"syscall"
 )
@@ -26,13 +26,15 @@ func main() {
 
 	server := server.NewServer(cfg.API)
 
-	webauthn, err := webauthn.NewWebAuthn(cfg.WebAuthn)
+	webauthn, err := webauthnlib.NewWebAuthn(cfg.WebAuthn)
 	if err != nil {
 		return
 	}
 
 	// initialize repository
-	inMemoryUserRepositoryImpl := &repository.InMemoryUserRepository{}
+	inMemoryUserRepositoryImpl := &repository.InMemoryUserRepository{
+		Users: make(map[string]*webauthnlib.RegisteredUser),
+	}
 	inMemorySessionRepositoryImpl := &repository.InMemorySessionDataReopository{}
 
 	// initialize service
