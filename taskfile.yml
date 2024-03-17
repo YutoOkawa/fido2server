@@ -4,3 +4,7 @@ tasks:
   build:
     cmds:
       - go build -o ./cmd/fido2server ./cmd/fido2server
+
+  run:
+    cmds:
+      - ./cmd/fido2server/fido2server

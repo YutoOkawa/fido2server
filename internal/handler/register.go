@@ -6,11 +6,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func RegisterHandler(rergister service.RegisterService) func(c *fiber.Ctx) error {
+func RegisterOptionsHandler(service service.RegisterOptionsService) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		if err := rergister.Register(c); err != nil {
-			return err
-		}
-		return nil
+		return service.RegisterOptions(c)
+	}
+}
+
+func RegisterResultHandler(service service.RegisterResultService) func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		return service.RegisterResult(c)
 	}
 }

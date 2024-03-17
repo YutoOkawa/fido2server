@@ -4,8 +4,10 @@ import (
 	"context"
 	"fido2server/internal/config"
 	"fido2server/internal/handler"
+	"fido2server/internal/repository"
 	"fido2server/internal/server"
 	"fido2server/internal/service"
+	"fido2server/pkg/webauthn"
 	"os/signal"
 	"syscall"
 )
@@ -24,14 +26,34 @@ func main() {
 
 	server := server.NewServer(cfg.API)
 
+	webauthn, err := webauthn.NewWebAuthn(cfg.WebAuthn)
+	if err != nil {
+		return
+	}
+
+	// initialize repository
+	inMemoryUserRepositoryImpl := &repository.InMemoryUserRepository{}
+	inMemorySessionRepositoryImpl := &repository.InMemorySessionDataReopository{}
+
 	// initialize service
-	registerService := service.RegisterService{}
+	registerOptionsService := service.RegisterOptionsService{
+		UserRepository:        inMemoryUserRepositoryImpl,
+		SessionDataRepository: inMemorySessionRepositoryImpl,
+		WebAuthn:              webauthn,
+	}
+	registerResultService := service.RegisterResultService{
+		UserRepository: inMemoryUserRepositoryImpl,
+	}
 
 	// initialize handler
 	server.App.Get("/healthz", handler.HealthzHandler)
 	v1 := server.App.Group("v1")
 	{
-		v1.Post("/register", handler.RegisterHandler(registerService))
+		register := v1.Group("/register")
+		{
+			register.Post("/options", handler.RegisterOptionsHandler(registerOptionsService))
+			register.Post("/result", handler.RegisterResultHandler(registerResultService))
+		}
 	}
 
 	srvErrCh := make(chan error, 1)
