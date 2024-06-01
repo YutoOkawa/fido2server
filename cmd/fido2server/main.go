@@ -44,7 +44,9 @@ func main() {
 		WebAuthn:              webauthn,
 	}
 	registerResultService := service.RegisterResultService{
-		UserRepository: inMemoryUserRepositoryImpl,
+		UserRepository:    inMemoryUserRepositoryImpl,
+		SessionRepository: inMemorySessionRepositoryImpl,
+		WebAuthn:          webauthn,
 	}
 
 	// initialize handler
