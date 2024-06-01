@@ -55,7 +55,7 @@ func (r *RegisterOptionsService) RegisterOptions(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	if err := r.SessionDataRepository.SaveSessionData(sessionData); err != nil {
+	if err := r.SessionDataRepository.SaveSessionData(sessionData, user.UserName); err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
