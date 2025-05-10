@@ -6,6 +6,12 @@ type InMemoryUserRepository struct {
 	Users map[string]*webauthn.RegisteredUser
 }
 
+func NewInMemoryUserRepository() *InMemoryUserRepository {
+	return &InMemoryUserRepository{
+		Users: make(map[string]*webauthn.RegisteredUser),
+	}
+}
+
 func (i *InMemoryUserRepository) GetUser(userName string) (*webauthn.RegisteredUser, error) {
 	user, ok := i.Users[userName]
 	if !ok {

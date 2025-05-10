@@ -10,6 +10,12 @@ type InMemorySessionDataReopository struct {
 	Sessions map[string]*webauthn.SessionData
 }
 
+func NewInMemorySessionDataReopository() *InMemorySessionDataReopository {
+	return &InMemorySessionDataReopository{
+		Sessions: make(map[string]*webauthn.SessionData),
+	}
+}
+
 func (i *InMemorySessionDataReopository) GetSessionData(userName string) (*webauthn.SessionData, error) {
 	session, ok := i.Sessions[userName]
 	if !ok {

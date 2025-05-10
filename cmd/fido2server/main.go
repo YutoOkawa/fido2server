@@ -32,10 +32,8 @@ func main() {
 	}
 
 	// initialize repository
-	inMemoryUserRepositoryImpl := &repository.InMemoryUserRepository{
-		Users: make(map[string]*webauthnlib.RegisteredUser),
-	}
-	inMemorySessionRepositoryImpl := &repository.InMemorySessionDataReopository{}
+	inMemoryUserRepositoryImpl := repository.NewInMemoryUserRepository()
+	inMemorySessionRepositoryImpl := repository.NewInMemorySessionDataReopository()
 
 	// initialize service
 	registerOptionsService := service.RegisterOptionsService{
