@@ -1,3 +1,7 @@
 api:
   port: 8080
   shutdownTimeoutSec: 5
+webauthn:
+  RPDisplayName: "testDisplayName"
+  RPID: "testRPID"
+  RPOrigin: "https://test.local"
