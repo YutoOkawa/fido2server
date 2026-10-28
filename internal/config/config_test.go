@@ -28,6 +28,11 @@ func TestNewConfig(t *testing.T) {
 					Port:               8080,
 					ShutdownTimeoutSec: 5,
 				},
+				WebAuthn: WebAuthn{
+					RPDisplayName: "testDisplayName",
+					RPID:          "testRPID",
+					RPOrigin:      "https://test.local",
+				},
 			},
 		},
 		{
